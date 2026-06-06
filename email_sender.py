@@ -2,6 +2,7 @@
 Email Sender Module for Automated Trading Reports
 Sends detailed screening and backtesting results via email
 Author: Trading Strategy System
+MODIFIED FOR US MARKET - USD CURRENCY
 """
 
 import smtplib
@@ -33,7 +34,7 @@ class TradingEmailSender:
         """
         # Create message container
         message = MIMEMultipart("alternative")
-        # ✅ CHANGED THIS LINE - New subject
+        # ✅ CHANGED SUBJECT
         message["Subject"] = f"📊 Here is your screened watchlist - {datetime.now().strftime('%Y-%m-%d')}"
         message["From"] = self.sender_email
         message["To"] = self.recipient_email
@@ -56,13 +57,13 @@ class TradingEmailSender:
         return message
 
     def generate_email_content(self, screening_results, backtest_results=None, market_context=None):
-        """Generate comprehensive email content"""
+        """Generate comprehensive email content - MODIFIED FOR USD"""
         content = []
 
         # Header
         content.append("🚀 MARK MINERVINI TRADING STRATEGY - DAILY SCREENING REPORT")
         content.append("=" * 70)
-        content.append(f"📅 Report Date: {datetime.now().strftime('%A, %B %d, %Y at %I:%M %p IST')}")
+        content.append(f"📅 Report Date: {datetime.now().strftime('%A, %B %d, %Y at %I:%M %p')}")
         content.append(f"🎯 Strategy: SEPA (Specific Entry Point Analysis)")
         content.append(f"📧 Automated Report for: {self.recipient_email}")
         content.append("")
@@ -71,7 +72,7 @@ class TradingEmailSender:
         if market_context:
             content.append("🌍 MARKET OVERVIEW:")
             content.append("-" * 30)
-            content.append(f"Nifty 50: {market_context.get('nifty_level', 'N/A')}")
+            content.append(f"S&P 500 (SPY): {market_context.get('spy_level', 'N/A')}")
             content.append(f"Market Trend: {market_context.get('market_trend', 'Analyzing...')}")
             content.append(f"Volatility (VIX): {market_context.get('vix_level', 'N/A')}")
             content.append("")
@@ -87,7 +88,7 @@ class TradingEmailSender:
             content.append(f"🟢 STRONG BUY Signals: {len(strong_buys)}")
             content.append(f"🔵 BUY Signals: {len(buys)}")
             content.append(f"🟡 WATCH Signals: {len(watches)}")
-            content.append(f"📊 Total Stocks Screened: ~750 (Nifty Total Market)")
+            content.append(f"📊 Total Stocks Screened: {len(screening_results)} stocks passed criteria")
             content.append("")
 
             # Detailed stock recommendations
@@ -108,7 +109,8 @@ class TradingEmailSender:
                     latest = template.get("latest_data", {})
 
                     content.append(f"{i:2d}. {symbol:12} | {signal:10} | Score: {strength}/10")
-                    content.append(f"    💰 Entry: ₹{price:.2f} | Stop: ₹{stop_loss:.2f} | Size: {position_pct:.1f}%")
+                    # ✅ CHANGED FROM ₹ TO $ FOR USD
+                    content.append(f"    💰 Entry: ${price:.2f} | Stop: ${stop_loss:.2f} | Size: {position_pct:.1f}%")
 
                     if latest:
                         content.append(f"    📊 52W High: -{latest.get('pct_from_high', 0):.1f}% | "
@@ -135,7 +137,8 @@ class TradingEmailSender:
             content.append(f"📈 Annualized Return: {metrics.get('annualized_return_pct', 0):.2f}%")
             content.append(f"🎯 Win Rate: {metrics.get('win_rate_pct', 0):.1f}%")
             content.append(f"📉 Max Drawdown: {metrics.get('max_drawdown_pct', 0):.2f}%")
-            content.append(f"💰 Final Portfolio Value: ₹{metrics.get('final_value', 0):,.0f}")
+            # ✅ CHANGED FROM ₹ TO $ FOR USD
+            content.append(f"💰 Final Portfolio Value: ${metrics.get('final_value', 0):,.0f}")
             content.append(f"🎲 Total Trades: {metrics.get('total_trades', 0)}")
             content.append("")
 
@@ -154,7 +157,7 @@ class TradingEmailSender:
         content.append("-" * 25)
         content.append("• Best entries: Market opens with strong volume")
         content.append("• Avoid: Last 30 minutes of trading day")
-        content.append("• Monitor: Overall market direction (Nifty trend)")
+        content.append("• Monitor: Overall market direction (SPY trend)")
         content.append("• VIX above 25: Reduce position sizes")
         content.append("")
 
@@ -171,7 +174,7 @@ class TradingEmailSender:
         content.append("🤖 AUTOMATION DETAILS:")
         content.append("-" * 22)
         content.append("• Generated: GitHub Actions (Weekdays 9:30 AM IST)")
-        content.append("• Data Source: NSE via yfinance")
+        content.append("• Data Source: Yahoo Finance (US Stocks)")
         content.append("• Strategy: Mark Minervini SEPA System")
         content.append("• Contact: This is an automated report")
         content.append("")
@@ -311,7 +314,7 @@ class TradingEmailSender:
 🚨 TRADING SYSTEM ERROR ALERT
 
 Script: {script_name}
-Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S IST')}
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 Error: {error_message}
 
 Please check the GitHub Actions logs for more details.
@@ -343,24 +346,45 @@ if __name__ == "__main__":
     # Create mock screening results for testing
     mock_results = [
         {
-            "symbol": "RELIANCE.NS",
+            "symbol": "MAR",
             "entry_signal": "STRONG BUY",
-            "signal_strength": 8,
-            "entry_price": 2500.0,
-            "stop_loss": 2325.0,
-            "position_size_pct": 3.2,
+            "signal_strength": 10,
+            "entry_price": 392.51,
+            "stop_loss": 365.03,
+            "position_size_pct": 5.0,
             "template_result": {
-                "criteria_passed": 7,
+                "criteria_passed": 8,
                 "total_criteria": 8,
                 "latest_data": {
                     "date": datetime.now(),
-                    "pct_from_high": 12.5,
-                    "pct_from_low": 45.2
+                    "pct_from_high": 1.0,
+                    "pct_from_low": 56.2
                 }
             },
             "vcp_result": {
                 "has_vcp": True,
                 "vcp_data": {"breakout_candidate": True}
+            }
+        },
+        {
+            "symbol": "C",
+            "entry_signal": "BUY",
+            "signal_strength": 8,
+            "entry_price": 132.47,
+            "stop_loss": 123.20,
+            "position_size_pct": 5.0,
+            "template_result": {
+                "criteria_passed": 7,
+                "total_criteria": 8,
+                "latest_data": {
+                    "date": datetime.now(),
+                    "pct_from_high": 2.5,
+                    "pct_from_low": 79.1
+                }
+            },
+            "vcp_result": {
+                "has_vcp": True,
+                "vcp_data": {"breakout_candidate": False}
             }
         }
     ]
@@ -369,11 +393,6 @@ if __name__ == "__main__":
     email_sender = TradingEmailSender()
     content = email_sender.generate_email_content(mock_results)
 
-    print("✅ Sample email content generated")
-    print("Preview (first 500 chars):")
-    print(content[:500] + "...")
-
-    # To actually send emails, you would need to set environment variables:
-    # export SENDER_EMAIL="your-gmail@gmail.com"
-    # export SENDER_PASSWORD="your-app-password" 
-    # export RECIPIENT_EMAIL="paras.m.parmar@gmail.com"
+    print("✅ Sample email content generated with USD formatting")
+    print("\nPreview:")
+    print(content[:800] + "...")

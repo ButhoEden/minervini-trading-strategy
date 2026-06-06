@@ -56,7 +56,8 @@ class DataFetcher:
         except Exception as e:
             print(f"Warning: Error normalizing datetime column {column_name}: {e}")
             return df
-def get_nifty_stocks_list(self):
+
+    def get_nifty_stocks_list(self):
         """
         *** MODIFIED FOR US MARKET ***
         Returns a list of US stock tickers instead of Nifty symbols.
@@ -100,7 +101,6 @@ def get_nifty_stocks_list(self):
         print(f"✅ Loaded {len(self.nifty_750_symbols)} US stock symbols")
         return self.nifty_750_symbols
 
-       
     def fetch_stock_data(self, symbol, period="2y"):
         """
         Fetch historical stock data for a single symbol with timezone fix
@@ -240,16 +240,16 @@ def get_nifty_stocks_list(self):
     def get_market_data(self):
         """Get overall market data for context with timezone handling"""
         try:
-            # Fetch Nifty 50 data
-            nifty = yf.Ticker("^NSEI")
-            nifty_data = nifty.history(period="2y")
+            # Fetch Nifty 50 data - CHANGE THIS TO SPY FOR US MARKET
+            spy = yf.Ticker("SPY")
+            spy_data = spy.history(period="2y")
 
-            if not nifty_data.empty:
+            if not spy_data.empty:
                 # Reset index and normalize datetime
-                nifty_data.reset_index(inplace=True)
-                nifty_data = self.normalize_datetime_column(nifty_data, 'Date')
-                nifty_data = self.add_technical_indicators(nifty_data)
-                return nifty_data
+                spy_data.reset_index(inplace=True)
+                spy_data = self.normalize_datetime_column(spy_data, 'Date')
+                spy_data = self.add_technical_indicators(spy_data)
+                return spy_data
             else:
                 return None
 
@@ -257,20 +257,21 @@ def get_nifty_stocks_list(self):
             print(f"❌ Error fetching market data: {e}")
             return None
 
+
 if __name__ == "__main__":
     # Test the data fetcher with datetime fixes
     fetcher = DataFetcher()
 
-    # Test single stock
+    # Test single stock (now testing US stock)
     print("Testing single stock data fetch with datetime fix...")
-    reliance_data = fetcher.fetch_stock_data("RELIANCE.NS", "1y")
-    if reliance_data is not None:
-        print(f"RELIANCE data shape: {reliance_data.shape}")
-        print(f"Date column type: {reliance_data['Date'].dtype}")
-        print(reliance_data[['Date', 'Close', 'SMA_50', 'SMA_200']].tail())
+    aapl_data = fetcher.fetch_stock_data("AAPL", "1y")
+    if aapl_data is not None:
+        print(f"AAPL data shape: {aapl_data.shape}")
+        print(f"Date column type: {aapl_data['Date'].dtype}")
+        print(aapl_data[['Date', 'Close', 'SMA_50', 'SMA_200']].tail())
 
         # Test datetime comparison
-        latest_date = reliance_data['Date'].iloc[-1]
+        latest_date = aapl_data['Date'].iloc[-1]
         comparison_date = datetime.now() - timedelta(days=30)
 
         print(f"\nTesting datetime comparison:")
@@ -284,9 +285,9 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"❌ Datetime comparison failed: {e}")
 
-    # Test multiple stocks (small sample)
+    # Test multiple stocks (small sample of US stocks)
     print("\nTesting multiple stocks...")
-    test_symbols = ['RELIANCE.NS', 'TCS.NS', 'INFY.NS']
+    test_symbols = ['AAPL', 'MSFT', 'NVDA']
     test_data = fetcher.fetch_multiple_stocks(test_symbols, "6mo")
     print(f"Successfully fetched data for {len(test_data)} stocks")
 

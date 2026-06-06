@@ -2,6 +2,7 @@
 Stock Screener Module implementing Mark Minervini's SEPA Strategy
 Includes Trend Template, VCP Pattern Detection, and Entry/Exit Signals
 Author: Trading Strategy System
+MODIFIED FOR US MARKET
 """
 
 import pandas as pd
@@ -60,7 +61,7 @@ class MinerviniScreener:
             # 5. Current stock price is trading above 50-day SMA
             criteria['price_above_50_sma'] = latest['Close'] > latest['SMA_50']
 
-            # 6. Current price at least 25% above 52-week low (Minervini uses 30%)
+            # 6. Current price at least 30% above 52-week low (Minervini uses 30%)
             criteria['price_above_52w_low_30pct'] = latest['Pct_From_Low'] >= 30.0
 
             # 7. Current price within 25% of 52-week high
@@ -84,9 +85,9 @@ class MinerviniScreener:
 
             passes_template = all(main_criteria)
 
-            # Additional quality checks
+            # Additional quality checks (adjusted for US market)
             criteria['sufficient_volume'] = latest['Volume'] > latest['Volume_SMA_50'] * 0.5
-            criteria['not_penny_stock'] = latest['Close'] > 100  # Above ₹100
+            criteria['not_penny_stock'] = latest['Close'] > 10  # Above $10 (US penny stock threshold)
 
             # Collect latest data for analysis
             latest_data = {
@@ -350,7 +351,9 @@ class MinerviniScreener:
         report.append("-" * 50)
 
         for i, result in enumerate(screening_results[:20], 1):  # Top 20
-            symbol = result["symbol"].replace('.NS', '')
+            symbol = result["symbol"]
+            # Remove any .NS suffix if present (not needed for US stocks)
+            symbol = symbol.replace('.NS', '')
             signal = result["entry_signal"]
             strength = result["signal_strength"]
             price = result["entry_price"]
@@ -361,7 +364,7 @@ class MinerviniScreener:
             vcp = result["vcp_result"]
 
             report.append(f"{i:2d}. {symbol:15} | Signal: {signal:10} | Strength: {strength}/10")
-            report.append(f"     💰 Price: ₹{price:.2f} | Stop: ₹{stop_loss:.2f} | Position: {position_pct:.1f}%")
+            report.append(f"     💰 Price: ${price:.2f} | Stop: ${stop_loss:.2f} | Position: {position_pct:.1f}%")
 
             # Template criteria summary
             passed = template["criteria_passed"]
@@ -374,16 +377,17 @@ class MinerviniScreener:
 
         return "\n".join(report)
 
+
 if __name__ == "__main__":
     # Test the screener
     print("Testing Minervini Screener...")
 
     screener = MinerviniScreener()
 
-    # Test with sample data (you would use real data)
+    # Test with US stock data
     import yfinance as yf
 
-    test_symbol = "RELIANCE.NS"
+    test_symbol = "AAPL"  # Changed from RELIANCE.NS to AAPL for US market
     test_data = yf.Ticker(test_symbol).history(period="2y")
 
     if not test_data.empty:

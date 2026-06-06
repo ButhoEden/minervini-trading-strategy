@@ -33,7 +33,8 @@ class TradingEmailSender:
         """
         # Create message container
         message = MIMEMultipart("alternative")
-        message["Subject"] = f"📊 Minervini Stock Screening Report - {datetime.now().strftime('%Y-%m-%d')}"
+        # ✅ CHANGED THIS LINE - New subject
+        message["Subject"] = f"📊 Here is your screened watchlist - {datetime.now().strftime('%Y-%m-%d')}"
         message["From"] = self.sender_email
         message["To"] = self.recipient_email
 

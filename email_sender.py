@@ -34,7 +34,7 @@ class TradingEmailSender:
         """
         # Create message container
         message = MIMEMultipart("alternative")
-        # ✅ CHANGED SUBJECT
+        # ✅ CHANGED SUBJECT - "Here is your screened watchlist"
         message["Subject"] = f"📊 Here is your screened watchlist - {datetime.now().strftime('%Y-%m-%d')}"
         message["From"] = self.sender_email
         message["To"] = self.recipient_email
@@ -60,8 +60,8 @@ class TradingEmailSender:
         """Generate comprehensive email content - MODIFIED FOR USD"""
         content = []
 
-        # Header
-        content.append("🚀 MARK MINERVINI TRADING STRATEGY - DAILY SCREENING REPORT")
+        # Header - ✅ CHANGED from MARK MINERVINI to BUTHO
+        content.append("🚀 BUTHO TRADING STRATEGY - DAILY SCREENING REPORT")
         content.append("=" * 70)
         content.append(f"📅 Report Date: {datetime.now().strftime('%A, %B %d, %Y at %I:%M %p')}")
         content.append(f"🎯 Strategy: SEPA (Specific Entry Point Analysis)")

@@ -24,7 +24,7 @@ env:
   # Email configuration
   SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
   SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
-  RECIPIENT_EMAIL: paras.m.parmar@gmail.com
+  RECIPIENT_EMAIL: BUTHOEDEN7@GMAIL.COM
 
   # Runtime configuration
   FORCE_BACKTEST: ${{ github.event.inputs.force_backtest || 'false' }}

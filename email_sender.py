@@ -57,7 +57,7 @@ class TradingEmailSender:
         return message
 
     def generate_email_content(self, screening_results, backtest_results=None, market_context=None):
-        """Generate comprehensive email content - MODIFIED FOR USD"""
+        """Generate comprehensive email content - MODIFIED FOR USD - FOOTER REMOVED"""
         content = []
 
         # Header - ✅ CHANGED from MARK MINERVINI to BUTHO
@@ -170,18 +170,7 @@ class TradingEmailSender:
         content.append("• Goal: Consistent 20-30% annual returns")
         content.append("")
 
-        # Footer
-        content.append("🤖 AUTOMATION DETAILS:")
-        content.append("-" * 22)
-        content.append("• Generated: GitHub Actions (Weekdays 9:30 AM IST)")
-        content.append("• Data Source: Yahoo Finance (US Stocks)")
-        content.append("• Strategy: Mark Minervini SEPA System")
-        content.append("• Contact: This is an automated report")
-        content.append("")
-        content.append("⚠️  DISCLAIMER: This is for educational purposes only.")
-        content.append("    Always consult with a financial advisor before trading.")
-        content.append("")
-        content.append("Happy Trading! 🚀")
+        # Footer removed as requested - only closing line remains
         content.append("=" * 70)
 
         return "\n".join(content)
@@ -213,10 +202,6 @@ class TradingEmailSender:
                 html_lines.append(f"<p style='background: #E6F3FF; padding: 10px; border-left: 4px solid #1E90FF; margin: 8px 0;'><strong>{line}</strong></p>")
             elif line.startswith(("📈", "📉", "🎯", "💰", "🎲")):
                 html_lines.append(f"<p style='margin: 5px 0; padding-left: 20px;'><strong>{line}</strong></p>")
-            elif "Happy Trading!" in line:
-                html_lines.append(f"<p style='text-align: center; font-size: 18px; color: #2E8B57; font-weight: bold;'>{line}</p>")
-            elif "DISCLAIMER" in line:
-                html_lines.append(f"<p style='color: #FF6B6B; font-weight: bold; text-align: center;'>{line}</p>")
             else:
                 html_lines.append(f"<p style='margin: 5px 0;'>{line}</p>")
 
@@ -338,6 +323,7 @@ This is an automated error notification.
         except Exception as e:
             print(f"❌ Failed to send error notification: {e}")
             return False
+
 
 if __name__ == "__main__":
     # Test email sender

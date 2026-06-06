@@ -56,58 +56,51 @@ class DataFetcher:
         except Exception as e:
             print(f"Warning: Error normalizing datetime column {column_name}: {e}")
             return df
-
-    def get_nifty_stocks_list(self):
+def get_nifty_stocks_list(self):
         """
-        Get list of Nifty 750 stocks from multiple sources
-        Returns list of stock symbols
+        *** MODIFIED FOR US MARKET ***
+        Returns a list of US stock tickers instead of Nifty symbols.
         """
-        try:
-            # Try to get Nifty 500 first (closest available to 750)
-            url = "https://nsearchives.nseindia.com/content/indices/ind_nifty500list.csv"
-
-            # Warm-up request
-            self.session.get("https://www.nseindia.com", timeout=5)
-            response = self.session.get(url, timeout=10)
-
-            if response.status_code == 200:
-                csv_content = response.content.decode('utf-8')
-                df = pd.read_csv(StringIO(csv_content))
-                symbols = df['Symbol'].tolist()
-
-                # Add .NS suffix for yfinance
-                symbols_with_suffix = [symbol + '.NS' for symbol in symbols]
-                self.nifty_750_symbols = symbols_with_suffix[:750]  # Limit to 750
-
-                print(f"✅ Successfully fetched {len(self.nifty_750_symbols)} stock symbols")
-                return self.nifty_750_symbols
-
-        except Exception as e:
-            print(f"⚠️ Error fetching from NSE, using fallback list: {e}")
-
-        # Fallback hardcoded list of major Nifty stocks
-        fallback_symbols = [
-            'RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'INFY.NS', 'HINDUNILVR.NS',
-            'ICICIBANK.NS', 'KOTAKBANK.NS', 'SBIN.NS', 'BHARTIARTL.NS', 'ITC.NS',
-            'LT.NS', 'AXISBANK.NS', 'ASIANPAINT.NS', 'MARUTI.NS', 'SUNPHARMA.NS',
-            'TITAN.NS', 'ULTRACEMCO.NS', 'BAJFINANCE.NS', 'NESTLEIND.NS', 'WIPRO.NS',
-            'M&M.NS', 'TATASTEEL.NS', 'NTPC.NS', 'POWERGRID.NS', 'ONGC.NS',
-            'JSWSTEEL.NS', 'GRASIM.NS', 'TECHM.NS', 'BAJAJFINSV.NS', 'COALINDIA.NS',
+        us_stocks = [
+            # Mega-Cap Technology (Leaders)
+            "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA",
+            
+            # Strong Financials
+            "JPM", "V", "MA", "AXP", "BAC", "WFC", "C",
+            
+            # Top Healthcare
+            "JNJ", "UNH", "LLY", "ABBV", "MRK", "PFE", "TMO", "ABT",
+            
+            # Leading Retail & Consumer
+            "COST", "HD", "NKE", "SBUX", "MCD", "WMT", "TGT", "LOW",
+            
+            # Strong Industrials
+            "CAT", "GE", "BA", "LMT", "RTX", "HON", "UPS", "UNP",
+            
+            # Top Communication & Media
+            "NFLX", "DIS", "CMCSA", "VZ", "T",
+            
+            # Leading Technology (Semis & Software)
+            "AVGO", "AMD", "INTC", "CRM", "ADBE", "ORCL", "IBM", "NOW",
+            
+            # Strong Consumer Discretionary
+            "BKNG", "MAR", "HLT", "RCL", "CCL", "F", "GM",
+            
+            # Top Energy
+            "XOM", "CVX", "COP", "EOG", "SLB",
+            
+            # Best Utilities (Defensive)
+            "NEE", "DUK", "SO", "D", "AEP",
+            
+            # Leading Real Estate
+            "PLD", "AMT", "CCI", "EQIX", "O",
         ]
-
-        # Extend with more stocks to reach closer to 750
-        additional_stocks = [
-            'ADANIPORTS.NS', 'ADANIENT.NS', 'APOLLOHOSP.NS', 'BAJAJ-AUTO.NS',
-            'CIPLA.NS', 'DRREDDY.NS', 'EICHERMOT.NS', 'HCLTECH.NS', 'HDFCLIFE.NS',
-            'HEROMOTOCO.NS', 'HINDALCO.NS', 'INDUSINDBK.NS', 'IOC.NS', 'JIOFIN.NS',
-            'TATACONSUM.NS', 'TATAMOTORS.NS', 'TRENT.NS', 'DIVISLAB.NS', 'BRITANNIA.NS',
-            'SHRIRAMFIN.NS', 'GODREJCP.NS', 'PIDILITIND.NS', 'DABUR.NS', 'MARICO.NS'
-        ]
-
-        self.nifty_750_symbols = fallback_symbols + additional_stocks
-        print(f"✅ Using fallback list with {len(self.nifty_750_symbols)} symbols")
+        
+        self.nifty_750_symbols = us_stocks
+        print(f"✅ Loaded {len(self.nifty_750_symbols)} US stock symbols")
         return self.nifty_750_symbols
 
+       
     def fetch_stock_data(self, symbol, period="2y"):
         """
         Fetch historical stock data for a single symbol with timezone fix
